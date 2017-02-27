@@ -1,16 +1,17 @@
-Name:           kafka_2.11
+define scala_version 2.11
+Name:           kafka
 Version:        0.9.0.1
-Release:        1%{?dist}
-Summary:        Kafka distributed topic based producer consumer queue 
+Release:        2%{?dist}
+Summary:        Kafka distributed topic based producer consumer queue
 
-Group:          Applications 
-License:        Apache (v2) 
-URL:            http://kafka.apache.org  
-Source0:        %{name}-%{version}.tgz
+Group:          Applications
+License:        Apache (v2)
+URL:            http://kafka.apache.org
+Source0:        %{name}_%{scala_version}-%{version}.tgz
 Source1:        kafka.init
 BuildArch:	noarch
-#BuildRequires:  
-Requires:       java >= 1.7  
+#BuildRequires:
+Requires:       java >= 1.7
 Requires:	zookeeper
 Requires(post):	/sbin/chkconfig,/sbin/service
 Requires(preun): /sbin/chkconfig,/sbin/service
@@ -24,7 +25,7 @@ Provides:	kafka
 %define home /opt/kafka
 
 %pre
-getent group %{group} >/dev/null || groupadd -r %{group} 
+getent group %{group} >/dev/null || groupadd -r %{group}
 getent passwd %{user} >/dev/null || \
     useradd -r -g %{group} -d %{_sharedstatedir}/kafka -s /sbin/nologin \
     -c "User for kafka services" %{user}
@@ -41,7 +42,7 @@ rm -rf %{_localstatedir}/log/kafka
 rm -rf %{_sysconfdir}/kafka
 
 %prep
-%setup -q
+%setup -q -n %{name}_%{scala_version}-%{version}
 
 
 %build
@@ -57,7 +58,7 @@ mkdir -p %{buildroot}%{_var}/log/kafka
 mkdir -p %{buildroot}%{data_dir}
 mkdir -p %{buildroot}/etc/rc.d/init.d
 mkdir -p %{buildroot}%{_sysconfdir}/kafka
-cp -R $RPM_BUILD_DIR/%{name}-%{version}/* %{buildroot}%{home}
+cp -R $RPM_BUILD_DIR/%{name}_%{scala_version}-%{version}/* %{buildroot}%{home}
 
 sed "s,log.dirs=.*,log.dirs=%{_sharedstatedir}/kafka/data," config/server.properties >%{buildroot}%{home}/config/server.properties
 cp  %{buildroot}%{home}/config/server.properties %{buildroot}%{_sysconfdir}/kafka/server.properties
